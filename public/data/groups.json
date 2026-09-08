@@ -1,0 +1,20 @@
+{
+  "default": "mks-2601",
+  "groups": [
+    {
+      "id": "mks-2601",
+      "name": "МКС-2601",
+      "file": "groups/mks-2601.json"
+    },
+    {
+      "id": "mks-2602",
+      "name": "МКС-2602",
+      "file": "groups/mks-2602.json"
+    },
+    {
+      "id": "mks-2501",
+      "name": "МКС-2501",
+      "file": "groups/mks-2501.json"
+    }
+  ]
+}

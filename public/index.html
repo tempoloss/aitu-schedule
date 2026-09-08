@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Расписание</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="gate" id="gate" hidden>
+  <div class="gate__box">
+    <h1 class="gate__title">Какая группа?</h1>
+    <p class="gate__sub">запомню, потом можно сменить в шапке</p>
+    <div class="gate__list" id="gateList"></div>
+  </div>
+</div>
+
+<header class="head">
+  <div class="head__row">
+    <div>
+      <h1 class="head__title" id="title">Расписание</h1>
+      <p class="head__sub" id="subtitle"></p>
+    </div>
+    <div class="head__actions">
+      <select class="head__group" id="groupPick" title="Группа" hidden></select>
+      <button class="head__btn" id="viewToggle" title="Сетка или список">список</button>
+      <button class="head__btn" id="ics" title="Скачать .ics для Google Календаря">календарь</button>
+      <button class="head__btn" id="openMap" title="Карта корпуса">карта</button>
+    </div>
+  </div>
+  <p class="head__meta" id="meta"></p>
+</header>
+
+<div class="now" id="now" hidden></div>
+
+<nav class="days" id="days"></nav>
+
+<main class="list" id="list"></main>
+<main class="grid" id="grid" hidden></main>
+
+<div class="det" id="det" hidden>
+  <div class="det__card">
+    <div class="det__when" id="detWhen"></div>
+    <h2 class="det__name" id="detName"></h2>
+    <p class="det__meta" id="detMeta"></p>
+    <div class="det__actions">
+      <button class="head__btn" id="detMap" hidden>показать на карте</button>
+      <button class="head__btn" id="detClose">закрыть</button>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  <span id="footNote"></span>
+  <span id="footLinks"><a href="https://yuujiso.github.io/aitumap/" target="_blank" rel="noopener">карта</a></span>
+</footer>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet__bar">
+    <div class="sheet__room" id="sheetRoom">—</div>
+    <button class="sheet__close" id="closeMap" title="Закрыть">×</button>
+  </div>
+  <div class="sheet__segs">
+    <div class="segs" id="blocks"></div>
+    <div class="segs" id="floors"></div>
+  </div>
+  <div class="sheet__map" id="mapHost"></div>
+  <div class="sheet__hint" id="mapHint">колесо — зум, перетаскивание — сдвиг, двойной клик — сброс</div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

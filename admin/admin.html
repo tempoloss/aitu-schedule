@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Расписание · админка</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="admin">
+
+<header class="head">
+  <div class="head__row">
+    <div>
+      <h1 class="head__title">Админка</h1>
+      <p class="head__sub">группы и расписания</p>
+    </div>
+    <div class="head__actions">
+      <a class="head__btn" href="index.html">на сайт</a>
+    </div>
+  </div>
+  <p class="head__meta">
+    Бэкенда нет: правки живут в браузере, кнопка «скачать» отдаёт готовые файлы
+    для <code>public/data/</code>. После них <code>npx wrangler deploy</code>.
+  </p>
+</header>
+
+<main class="adm">
+  <section class="adm__bar">
+    <select class="adm__select" id="pick"></select>
+    <button class="head__btn" id="add">новая группа</button>
+    <button class="head__btn" id="dup">клонировать</button>
+    <button class="head__btn adm__danger" id="del">удалить</button>
+    <span class="adm__spacer"></span>
+    <button class="head__btn" id="save">скачать файлы</button>
+    <span class="adm__dirty" id="dirty" hidden>есть несохранённые правки</span>
+  </section>
+
+  <section class="adm__meta" id="meta"></section>
+  <section id="week"></section>
+
+  <section class="adm__out">
+    <h2 class="adm__h2">Что получится</h2>
+    <p class="adm__note" id="outNote"></p>
+    <details>
+      <summary>groups.json</summary>
+      <pre class="adm__pre" id="outIndex"></pre>
+    </details>
+    <details>
+      <summary>файл группы</summary>
+      <pre class="adm__pre" id="outGroup"></pre>
+    </details>
+  </section>
+</main>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
