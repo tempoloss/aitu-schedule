@@ -1,6 +1,5 @@
-// Shared between the viewer and the admin panel. Anything that both the site
-// and a future Google Calendar sync would need lives here, so the calendar path
-// never has to re-derive event shapes from the DOM.
+// Loading, event shapes and room parsing live here rather than in app.js, so a
+// future Google Calendar sync never has to re-derive events from the DOM.
 
 export const DAYS = [
   { name: "Понедельник", short: "Пн", dow: 1 },

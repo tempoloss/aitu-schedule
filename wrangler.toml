@@ -14,7 +14,7 @@ workers_dev = false
 preview_urls = false
 
 # Static-only Worker: no `main`, wrangler serves ./public from the edge.
-# Only public/ goes up, so wrangler.toml, tools/ and admin/ stay off the internet.
+# Only public/ goes up, so wrangler.toml and tools/ stay off the internet.
 [assets]
 directory = "./public"
 not_found_handling = "404-page"

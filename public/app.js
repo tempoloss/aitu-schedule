@@ -438,13 +438,6 @@ async function switchGroup(id) {
   paint();
 }
 
-// The admin page is excluded from the deploy by public/.assetsignore, so the
-// link is only worth showing where the file actually exists.
-if (["localhost", "127.0.0.1"].includes(location.hostname)) {
-  const links = document.getElementById("footLinks");
-  links.insertAdjacentHTML("afterbegin", '<a href="admin.html">админка</a> · ');
-}
-
 // Nobody on a phone has a wheel or a double click.
 if (matchMedia("(hover: none)").matches) {
   document.getElementById("mapHint").textContent =

@@ -1,35 +1,23 @@
-"""Local dev server.
-
-Serves public/ as the site root and additionally exposes admin/ at /admin.html
-and /admin.js. The admin files live outside public/ on purpose: whatever is in
-public/ is exactly what `wrangler deploy` uploads, so the admin panel cannot
-reach the internet by accident.
+"""Local dev server for public/.
 
     python tools/serve.py [port]
+
+Plain static serving plus one thing `python -m http.server` will not do: send
+no-store. Schedules get edited and reloaded constantly, and a stale JSON out of
+the disk cache wastes more time than the requests cost.
 """
 import http.server
 import os
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PUBLIC = os.path.join(ROOT, "public")
-ADMIN = os.path.join(ROOT, "admin")
-LOCAL_ONLY = {"/admin.html": "admin.html", "/admin.js": "admin.js", "/admin": "admin.html"}
+PUBLIC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public")
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=PUBLIC, **kw)
 
-    def translate_path(self, path):
-        clean = path.split("?", 1)[0].split("#", 1)[0]
-        if clean in LOCAL_ONLY:
-            return os.path.join(ADMIN, LOCAL_ONLY[clean])
-        return super().translate_path(path)
-
     def end_headers(self):
-        # Schedules get edited and reloaded constantly during dev; a stale JSON
-        # from the disk cache wastes more time than the requests cost.
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
@@ -39,6 +27,5 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8777
-    print(f"site  http://127.0.0.1:{port}/")
-    print(f"admin http://127.0.0.1:{port}/admin.html")
+    print(f"site http://127.0.0.1:{port}/")
     http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
