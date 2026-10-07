@@ -8,8 +8,12 @@
 <script>
 (function () {
   try {
-    document.documentElement.dataset.theme =
-      matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    var mq = matchMedia("(prefers-color-scheme: dark)");
+    var apply = function () {
+      document.documentElement.dataset.theme = mq.matches ? "dark" : "light";
+    };
+    apply();
+    mq.addEventListener("change", apply);
   } catch (e) {}
 })();
 </script>
