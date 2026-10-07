@@ -106,7 +106,7 @@ html, body {
 }
 body { padding-bottom: 40px; }
 
-::selection { background: color-mix(in oklch, var(--accent) 25%, transparent); }
+::selection { background: color-mix(in oklab, var(--accent) 25%, transparent); }
 
 button { font-family: inherit; }
 
@@ -123,7 +123,7 @@ button { font-family: inherit; }
 
 .head {
   position: sticky; top: 0; z-index: 10;
-  background: color-mix(in oklch, var(--bg) 90%, transparent);
+  background: color-mix(in oklab, var(--bg) 90%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
@@ -162,8 +162,6 @@ button { font-family: inherit; }
   color: var(--ink-3);
   font-size: 12px;
   line-height: 16px;
-  font-family: var(--font-mono);
-  letter-spacing: .03em;
   font-variant-numeric: tabular-nums;
 }
 .head__actions {
@@ -214,21 +212,20 @@ button { font-family: inherit; }
 .now {
   max-width: 880px;
   margin: 12px auto 0;
-  padding: 10px 16px;
-  background: var(--surface);
-  border-radius: 16px;
-  box-shadow:
-    inset 3px 0 0 var(--accent),
-    inset 0 0 0 1px var(--line),
-    var(--shadow-card);
+  padding: 10px 16px 10px 19px;
+  border-radius: 12px;
+  overflow: hidden;
+  background:
+    linear-gradient(var(--accent), var(--accent)) left / 3px 100% no-repeat,
+    var(--surface);
+  box-shadow: var(--shadow-card);
   color: var(--ink-2);
   font-size: 13px;
   line-height: 18px;
 }
 .now b { color: var(--ink); font-weight: 600; }
 
-/* ============================== day tabs (segmented) ============================== */
-
+/* day tabs: a real segmented control (fit-content, inset ring) */
 .days {
   position: sticky; top: 52px; z-index: 5;
   max-width: 880px;
@@ -238,16 +235,17 @@ button { font-family: inherit; }
   scrollbar-width: none;
 }
 .days::-webkit-scrollbar { display: none; }
-
-.segs {
+.days .segs {
   display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
   gap: 2px;
   background: var(--inset);
   border-radius: 10px;
   padding: 2px;
   box-shadow: inset 0 0 0 1px var(--line);
 }
-.seg {
+.day {
   border: 0;
   background: transparent;
   color: var(--ink-3);
@@ -260,24 +258,23 @@ button { font-family: inherit; }
   cursor: pointer;
   white-space: nowrap;
   position: relative;
+  min-height: 38px;
   transition: background .15s, color .15s;
 }
-.seg:hover { background: var(--hover); color: var(--ink); }
-.seg:active { transition-duration: .12s; }
-.seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.seg.is-active {
+.day:hover { background: var(--hover); color: var(--ink); }
+.day:active { transition-duration: .12s; }
+.day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.day.is-active {
   background: var(--raised);
   color: var(--ink);
   font-weight: 600;
   box-shadow: inset 0 0 0 1px var(--line);
 }
-[data-theme="light"] .seg.is-active { background: var(--surface); }
-
-/* today dot: 5px accent */
+[data-theme="light"] .day.is-active { background: var(--surface); }
 .day.is-today::after {
   content: "";
   position: absolute;
-  top: 4px;
+  top: 5px;
   right: 5px;
   width: 5px;
   height: 5px;
@@ -373,14 +370,14 @@ button { font-family: inherit; }
   white-space: nowrap;
 }
 .chip--room {
-  background: color-mix(in oklch, var(--accent) 14%, transparent);
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
   color: var(--accent-ink);
   cursor: pointer;
   transition: background .15s;
 }
-.chip--room:hover { background: color-mix(in oklch, var(--accent) 22%, transparent); }
+.chip--room:hover { background: color-mix(in oklab, var(--accent) 22%, transparent); }
 .chip--online {
-  background: color-mix(in oklch, var(--blue) 14%, transparent);
+  background: color-mix(in oklab, var(--blue) 14%, transparent);
   color: var(--blue);
 }
 .chip--far {
@@ -454,6 +451,40 @@ button { font-family: inherit; }
   padding: 0 16px 12px;
   border-bottom: 1px solid var(--line);
 }
+/* segmented control for map blocks/floors */
+.segs {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--inset);
+  border-radius: 10px;
+  padding: 2px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.seg {
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: background .15s, color .15s;
+}
+.seg:hover { background: var(--hover); color: var(--ink); }
+.seg:active { transition-duration: .12s; }
+.seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg.is-active {
+  background: var(--raised);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+[data-theme="light"] .seg.is-active { background: var(--surface); }
 .sheet__map { flex: 1; min-height: 0; overflow: hidden; touch-action: none; }
 .sheet__map svg { width: 100%; height: 100%; display: block; cursor: grab; }
 .sheet__map svg.is-panning { cursor: grabbing; }
@@ -524,8 +555,8 @@ button { font-family: inherit; }
 
 /* pin */
 .pin { pointer-events: none; }
-.pin__body { fill: var(--warn); stroke: color-mix(in oklch, var(--warn) 40%, oklch(0% 0 0)); stroke-width: .7; }
-.pin__dot { fill: color-mix(in oklch, var(--warn) 25%, oklch(0% 0 0)); }
+.pin__body { fill: var(--warn); stroke: color-mix(in oklab, var(--warn) 40%, oklch(0% 0 0)); stroke-width: .7; }
+.pin__dot { fill: color-mix(in oklab, var(--warn) 25%, oklch(0% 0 0)); }
 .pin__pulse { fill: var(--warn); opacity: .35; transform-origin: 0 0; animation: pulse 1.8s ease-out infinite; }
 @keyframes pulse {
   0% { transform: scale(.5); opacity: .5; }
@@ -548,8 +579,8 @@ button { font-family: inherit; }
   --map-service-text: var(--ink-4);
   --map-void: var(--bg);
   --map-void-stroke: oklch(90% .004 265);
-  --map-icon-accent: color-mix(in oklch, var(--blue) 30%, transparent);
-  --map-icon-green: color-mix(in oklch, oklch(60% .12 165) 30%, transparent);
+  --map-icon-accent: color-mix(in oklab, var(--blue) 30%, transparent);
+  --map-icon-green: color-mix(in oklab, oklch(60% .12 165) 30%, transparent);
   --map-icon-ink: var(--ink-4);
   --map-label: var(--ink-4);
 }
@@ -584,7 +615,7 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  background: color-mix(in oklab, var(--bg) 88%, transparent);
   backdrop-filter: blur(6px);
 }
 .gate[hidden] { display: none; }
@@ -689,12 +720,16 @@ button { font-family: inherit; }
 
 @media (max-width: 560px) {
   .head__row { flex-wrap: wrap; }
-  .head__actions { width: 100%; justify-content: flex-start; }
-  .head__group { flex: 1 1 auto; }
+  /* One row, no wrapping: group select takes the slack, buttons go compact. */
+  .head__actions { flex-wrap: nowrap; }
+  .head__group { flex: 1 1 auto; min-width: 0; }
+  .head__btn { padding: 6px 10px; font-size: 12.5px; min-height: 36px; }
+  #themeToggle { width: 36px; padding: 6px 0; justify-content: center; flex: none; }
   .chip { padding: 7px 11px; }
   .sheet__segs { gap: 8px; }
   .seg { padding: 8px 12px; }
   .sheet__hint { font-size: 11px; padding: 8px 16px; }
+  .now { margin-left: 16px; margin-right: 16px; max-width: none; }
 }
 
 /* ============================== grid view ============================== */
@@ -752,8 +787,8 @@ button { font-family: inherit; }
   border: 0;
   border-radius: 8px;
   padding: 6px 7px;
-  background: color-mix(in oklch, var(--accent) 12%, var(--surface));
-  box-shadow: inset 2px 0 0 var(--accent), inset 0 0 0 1px color-mix(in oklch, var(--line) 50%, transparent);
+  background: color-mix(in oklab, var(--accent) 12%, var(--surface));
+  box-shadow: inset 2px 0 0 var(--accent), inset 0 0 0 1px color-mix(in oklab, var(--line) 50%, transparent);
   color: var(--ink);
   font: inherit;
   text-align: left;
@@ -762,14 +797,14 @@ button { font-family: inherit; }
   transition: background .15s;
 }
 .g__cell:hover {
-  background: color-mix(in oklch, var(--accent) 20%, var(--surface));
+  background: color-mix(in oklab, var(--accent) 20%, var(--surface));
 }
 .g__cell.is-online {
-  background: color-mix(in oklch, var(--blue) 12%, var(--surface));
-  box-shadow: inset 2px 0 0 var(--blue), inset 0 0 0 1px color-mix(in oklch, var(--line) 50%, transparent);
+  background: color-mix(in oklab, var(--blue) 12%, var(--surface));
+  box-shadow: inset 2px 0 0 var(--blue), inset 0 0 0 1px color-mix(in oklab, var(--line) 50%, transparent);
 }
 .g__cell.is-online:hover {
-  background: color-mix(in oklch, var(--blue) 20%, var(--surface));
+  background: color-mix(in oklab, var(--blue) 20%, var(--surface));
 }
 .g__cell.is-now {
   outline: 2px solid var(--warn);
@@ -850,13 +885,11 @@ button { font-family: inherit; }
 }
 @media (min-width: 561px) { .det { align-items: center; } }
 
-/* display:flex beats the hidden attribute, same trap as the map sheet. */
-.days[hidden] { display: none; }
+/* display:flex/grid beats the hidden attribute, same trap as the map sheet. */
+.list[hidden], .grid[hidden], .days[hidden], .now[hidden] { display: none !important; }
 
 @media (max-width: 560px) {
-  .head__row { flex-wrap: wrap; height: auto; min-height: 52px; padding-top: 8px; padding-bottom: 8px; }
-  .head__btn { padding: 7px 11px; font-size: 12.5px; }
-  .head__group { padding: 7px 8px; font-size: 12.5px; }
+  .head__row { height: auto; min-height: 52px; padding-top: 8px; padding-bottom: 8px; }
   .days { top: auto; }
   .grid { grid-auto-rows: 48px; }
 }
