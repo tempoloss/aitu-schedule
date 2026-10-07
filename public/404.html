@@ -8,9 +8,8 @@
 <script>
 (function () {
   try {
-    var t = localStorage.getItem("schedule.theme") || "system";
-    if (t === "system") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    document.documentElement.dataset.theme = t;
+    document.documentElement.dataset.theme =
+      matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   } catch (e) {}
 })();
 </script>

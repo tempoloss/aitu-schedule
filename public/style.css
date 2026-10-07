@@ -146,24 +146,6 @@ button { font-family: inherit; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.head__sub {
-  margin: 0;
-  color: var(--ink-3);
-  font-size: 13px;
-  line-height: 18px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.head__meta {
-  max-width: 880px;
-  margin: 6px auto 0;
-  padding: 0 18px 8px;
-  color: var(--ink-3);
-  font-size: 12px;
-  line-height: 16px;
-  font-variant-numeric: tabular-nums;
-}
 .head__actions {
   display: flex;
   align-items: center;
@@ -206,24 +188,6 @@ button { font-family: inherit; }
   max-width: 140px;
 }
 .head__group:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* ============================== next-lesson banner ============================== */
-
-.now {
-  max-width: 880px;
-  margin: 12px auto 0;
-  padding: 10px 16px 10px 19px;
-  border-radius: 12px;
-  overflow: hidden;
-  background:
-    linear-gradient(var(--accent), var(--accent)) left / 3px 100% no-repeat,
-    var(--surface);
-  box-shadow: var(--shadow-card);
-  color: var(--ink-2);
-  font-size: 13px;
-  line-height: 18px;
-}
-.now b { color: var(--ink); font-weight: 600; }
 
 /* day tabs: a real segmented control (fit-content, inset ring) */
 .days {
@@ -388,20 +352,6 @@ button { font-family: inherit; }
 }
 
 .empty { color: var(--ink-3); padding: 30px 0; text-align: center; }
-
-.foot {
-  max-width: 880px;
-  margin: 26px auto 0;
-  padding: 0 18px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--ink-4);
-  font-size: 12px;
-  line-height: 16px;
-  font-variant-numeric: tabular-nums;
-}
-.foot a { color: var(--ink-3); }
 
 /* ============================== map sheet ============================== */
 
@@ -727,12 +677,10 @@ button { font-family: inherit; }
   .head__group { flex: none; }
   .head__btn { padding: 6px 10px; font-size: 12.5px; min-height: 36px; }
   .head__actions .head__btn { min-width: 0; justify-content: center; }
-  #themeToggle { width: 36px; padding: 6px 0; justify-content: center; flex: none; }
   .chip { padding: 7px 11px; }
   .sheet__segs { gap: 8px; }
   .seg { padding: 8px 12px; }
   .sheet__hint { font-size: 11px; padding: 8px 16px; }
-  .now { margin-left: 16px; margin-right: 16px; max-width: none; }
 }
 
 /* ============================== grid view ============================== */
@@ -889,7 +837,7 @@ button { font-family: inherit; }
 @media (min-width: 561px) { .det { align-items: center; } }
 
 /* display:flex/grid beats the hidden attribute, same trap as the map sheet. */
-.list[hidden], .grid[hidden], .days[hidden], .now[hidden] { display: none !important; }
+.list[hidden], .grid[hidden], .days[hidden] { display: none !important; }
 
 @media (max-width: 560px) {
   .head__row { height: auto; min-height: 52px; padding-top: 8px; padding-bottom: 8px; }

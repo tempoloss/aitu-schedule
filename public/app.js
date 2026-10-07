@@ -1,4 +1,4 @@
-import { minutes, mappable, blockOf, floorOf, loadIndex, loadGroup, toICS, download } from "./lib/schedule.js";
+import { minutes, mappable, blockOf, floorOf, loadIndex, loadGroup } from "./lib/schedule.js";
 
 const svgCache = new Map();
 
@@ -8,8 +8,8 @@ let activeDay = 0;
 let view = { block: "C1_2", floor: 2, room: null, mode: localStorage.getItem("view") || "grid" };
 
 const el = {};
-for (const id of ["title", "subtitle", "meta", "now", "days", "list", "grid", "footNote",
-  "groupPick", "ics", "sheet", "sheetRoom", "blocks", "floors", "mapHost",
+for (const id of ["title", "days", "list", "grid",
+  "groupPick", "sheet", "sheetRoom", "blocks", "floors", "mapHost",
   "openMap", "closeMap", "gate", "gateList", "viewToggle",
   "det", "detWhen", "detName", "detMeta", "detMap", "detClose"]) {
   el[id] = document.getElementById(id);
@@ -32,30 +32,6 @@ function askGroup() {
 }
 
 /* ---------------------------- schedule ---------------------------- */
-
-function currentLesson() {
-  const dow = new Date().getDay();
-  const day = group.days.find((d) => d.dow === dow);
-  if (!day) return null;
-  const now = new Date().getHours() * 60 + new Date().getMinutes();
-  for (const l of day.lessons) {
-    if (now >= minutes(l.start) && now <= minutes(l.end)) return { lesson: l, state: "now" };
-  }
-  for (const l of day.lessons) {
-    if (minutes(l.start) > now) return { lesson: l, state: "next", in: minutes(l.start) - now };
-  }
-  return null;
-}
-
-function renderNow() {
-  const cur = currentLesson();
-  if (!cur) return void (el.now.hidden = true);
-  const where = cur.lesson.room || "онлайн";
-  el.now.hidden = false;
-  el.now.innerHTML = cur.state === "now"
-    ? `сейчас идёт <b>${cur.lesson.subject}</b> · ${where} · до ${cur.lesson.end}`
-    : `следующая через ${cur.in} мин · <b>${cur.lesson.subject}</b> · ${where} · в ${cur.lesson.start}`;
-}
 
 function renderDays() {
   const today = new Date().getDay();
@@ -398,35 +374,14 @@ function setView(next) {
   if (isGrid) renderGrid(); else renderList();
 }
 
-// Дата окончания занятий важнее остальных: по ней обрезается календарь, и по
-// ней же видно, что после 14 ноября пар в расписании быть не должно.
-const DMY = (iso) =>
-  new Date(iso + "T00:00:00").toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
-
-function termLine(g) {
-  const t = g.term;
-  if (!t || !t.end) return "";
-  const parts = [`занятия до ${DMY(t.end)}`];
-  if (t.exams) parts.push(`сессия ${DMY(t.exams.start)} — ${DMY(t.exams.end)}`);
-  return parts.join(" · ");
-}
-
 function paint() {
   el.title.textContent = group.title;
-  el.subtitle.textContent = group.subtitle || "";
-  el.meta.textContent = [group.year, group.period, group.building, termLine(group)]
-    .filter(Boolean).join(" · ");
-
-  const rooms = new Set();
-  group.days.forEach((d) => d.lessons.forEach((l) => l.room && rooms.add(l.room)));
-  el.footNote.textContent = `${rooms.size} аудиторий за неделю`;
 
   const today = group.days.findIndex((d) => d.dow === new Date().getDay());
   activeDay = today === -1 ? 0 : today;
   renderGroupPicker();
   renderDays();
   setView(view.mode);
-  renderNow();
 }
 
 async function switchGroup(id) {
@@ -446,7 +401,6 @@ if (matchMedia("(hover: none)").matches) {
 
 el.openMap.onclick = () => openMap(null);
 el.closeMap.onclick = () => { el.sheet.hidden = true; };
-el.ics.onclick = () => download(`${group.id}.ics`, toICS(group), "text/calendar");
 el.viewToggle.onclick = () => setView(view.mode === "grid" ? "list" : "grid");
 el.detClose.onclick = () => { el.det.hidden = true; };
 el.det.onclick = (e) => { if (e.target === el.det) el.det.hidden = true; };
@@ -463,5 +417,7 @@ document.addEventListener("keydown", (e) => {
   ({ group } = await loadGroup(index, wanted || index.default));
   localStorage.setItem("group", group.id);
   paint();
-  setInterval(() => { renderNow(); setView(view.mode); }, 60000);
+  // The is-now outline in list and grid only flips when the view re-renders;
+  // the minute timer keeps it honest without a reload.
+  setInterval(() => setView(view.mode), 60000);
 })();

@@ -8,9 +8,8 @@
 <script>
 (function () {
   try {
-    var t = localStorage.getItem("schedule.theme") || "system";
-    if (t === "system") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    document.documentElement.dataset.theme = t;
+    document.documentElement.dataset.theme =
+      matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   } catch (e) {}
 })();
 </script>
@@ -28,22 +27,14 @@
 
 <header class="head">
   <div class="head__row">
-    <div class="head__heading">
-      <h1 class="head__title" id="title">Расписание</h1>
-      <p class="head__sub" id="subtitle"></p>
-    </div>
+    <h1 class="head__title" id="title">Расписание</h1>
     <div class="head__actions">
       <select class="head__group" id="groupPick" title="Группа" hidden></select>
       <button class="head__btn" id="viewToggle" title="Сетка или список">список</button>
-      <button class="head__btn" id="ics" title="Скачать .ics для Google Календаря">календарь</button>
       <button class="head__btn" id="openMap" title="Карта корпуса">карта</button>
-      <button class="head__btn" id="themeToggle" title="Тема" aria-label="Тема"></button>
     </div>
   </div>
-  <p class="head__meta" id="meta"></p>
 </header>
-
-<div class="now" id="now" hidden></div>
 
 <nav class="days" id="days"></nav>
 
@@ -62,11 +53,6 @@
   </div>
 </div>
 
-<footer class="foot">
-  <span id="footNote"></span>
-  <span id="footLinks"><a href="https://yuujiso.github.io/aitumap/" target="_blank" rel="noopener">карта</a></span>
-</footer>
-
 <div class="sheet" id="sheet" hidden>
   <div class="sheet__bar">
     <div class="sheet__room" id="sheetRoom">—</div>
@@ -80,7 +66,6 @@
   <div class="sheet__hint" id="mapHint">колесо — зум, перетаскивание — сдвиг, двойной клик — сброс</div>
 </div>
 
-<script type="module" src="theme.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>
