@@ -565,26 +565,6 @@ button { font-family: inherit; }
 }
 @media (prefers-reduced-motion: reduce) { .pin__pulse { animation: none; } }
 
-/* light theme map variables */
-[data-theme="light"] {
-  --map-bg: oklch(96% .003 265);
-  --map-line: oklch(85% .005 265);
-  --map-wall-fill: oklch(97% .002 265);
-  --map-wall-stroke: oklch(80% .006 265);
-  --map-room-fill: oklch(96% .003 265);
-  --map-room-stroke: var(--line);
-  --map-room-text: var(--ink-4);
-  --map-service-fill: oklch(97.5% .002 265);
-  --map-service-stroke: oklch(85% .005 265);
-  --map-service-text: var(--ink-4);
-  --map-void: var(--bg);
-  --map-void-stroke: oklch(90% .004 265);
-  --map-icon-accent: color-mix(in oklab, var(--blue) 30%, transparent);
-  --map-icon-green: color-mix(in oklab, oklch(60% .12 165) 30%, transparent);
-  --map-icon-ink: var(--ink-4);
-  --map-label: var(--ink-4);
-}
-
 /* dark map theme: keep the current dark hexes */
 :root {
   --map-bg: #15161b;
@@ -603,6 +583,26 @@ button { font-family: inherit; }
   --map-icon-green: #1e4033;
   --map-icon-ink: #9aa0ac;
   --map-label: #3d414a;
+}
+
+/* light map overrides: same specificity as :root, so they must come after it */
+[data-theme="light"] {
+  --map-bg: oklch(96% .003 265);
+  --map-line: oklch(85% .005 265);
+  --map-wall-fill: oklch(97% .002 265);
+  --map-wall-stroke: oklch(80% .006 265);
+  --map-room-fill: var(--surface);
+  --map-room-stroke: var(--line);
+  --map-room-text: var(--ink-3);
+  --map-service-fill: oklch(97.5% .002 265);
+  --map-service-stroke: oklch(85% .005 265);
+  --map-service-text: var(--ink-4);
+  --map-void: var(--bg);
+  --map-void-stroke: oklch(90% .004 265);
+  --map-icon-accent: color-mix(in oklab, var(--blue) 30%, transparent);
+  --map-icon-green: color-mix(in oklab, oklch(60% .12 165) 30%, transparent);
+  --map-icon-ink: var(--ink-4);
+  --map-label: oklch(80% .006 265);
 }
 
 /* ============================== group gate ============================== */
@@ -720,10 +720,13 @@ button { font-family: inherit; }
 
 @media (max-width: 560px) {
   .head__row { flex-wrap: wrap; }
-  /* One row, no wrapping: group select takes the slack, buttons go compact. */
+  /* One row, no wrapping. The group select never gives up width (a clipped
+     group name is useless); the text buttons shrink instead, eating into their
+     own padding while the label stays centred. */
   .head__actions { flex-wrap: nowrap; }
-  .head__group { flex: 1 1 auto; min-width: 0; }
+  .head__group { flex: none; }
   .head__btn { padding: 6px 10px; font-size: 12.5px; min-height: 36px; }
+  .head__actions .head__btn { min-width: 0; justify-content: center; }
   #themeToggle { width: 36px; padding: 6px 0; justify-content: center; flex: none; }
   .chip { padding: 7px 11px; }
   .sheet__segs { gap: 8px; }
