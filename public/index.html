@@ -3,7 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <title>Расписание</title>
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem("schedule.theme") || "system";
+    if (t === "system") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +28,7 @@
 
 <header class="head">
   <div class="head__row">
-    <div>
+    <div class="head__heading">
       <h1 class="head__title" id="title">Расписание</h1>
       <p class="head__sub" id="subtitle"></p>
     </div>
@@ -27,6 +37,7 @@
       <button class="head__btn" id="viewToggle" title="Сетка или список">список</button>
       <button class="head__btn" id="ics" title="Скачать .ics для Google Календаря">календарь</button>
       <button class="head__btn" id="openMap" title="Карта корпуса">карта</button>
+      <button class="head__btn" id="themeToggle" title="Тема" aria-label="Тема"></button>
     </div>
   </div>
   <p class="head__meta" id="meta"></p>
@@ -69,6 +80,7 @@
   <div class="sheet__hint" id="mapHint">колесо — зум, перетаскивание — сдвиг, двойной клик — сброс</div>
 </div>
 
+<script type="module" src="theme.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>
