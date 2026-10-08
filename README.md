@@ -1,98 +1,70 @@
 # schedule.an8kk.dev
 
-Расписание с картой корпуса АИТУ. Клик по аудитории открывает нужный блок и
-этаж и ставит на кабинет метку.
+Weekly timetable for AITU student groups, with a floor plan of the campus. Click a room and the map opens the right block and floor and drops a pin on the room.
 
-Ни зависимостей, ни сборки. Статика на Cloudflare Workers.
+No dependencies, no build step. Static files served from Cloudflare Workers.
 
-## Запуск и деплой
+## Run and deploy
 
 ```
-python tools/serve.py        # сайт локально, с no-store
-npx wrangler deploy          # наружу уезжает только public/
+python tools/serve.py        # local server for public/, no-store caching
+npx wrangler deploy          # only public/ is uploaded
 ```
 
 http://127.0.0.1:8777/ · https://schedule.an8kk.dev
 
-## Структура
+## Layout
 
 ```
-public/index.html            расписание
-public/app.js                вид расписания, метка, пан/зум карты
-public/lib/schedule.js       общий код: загрузка групп, разбор аудиторий
-public/style.css             токены светлой и тёмной темы, включая раскраску SVG-карт
-public/fonts/                Inter и JetBrains Mono, латиница и кириллица
-public/data/groups.json      индекс групп и группа по умолчанию
-public/data/groups/<id>.json расписание одной группы
-public/maps/F1..F3.svg       этаж целиком, все три блока
-public/maps/C1_B_F.svg       блок B на этаже F, девять штук
-tools/serve.py               локальный сервер public/ с no-store
-tools/build_maps.py          генерация всех двенадцати SVG из исходников aitumap
-wrangler.toml                деплой, кастомный домен
+public/index.html            timetable page
+public/app.js                timetable view, room pin, map pan and zoom
+public/lib/schedule.js       shared code: group loading, room parsing
+public/style.css             light and dark theme tokens, including the SVG map palette
+public/fonts/                Inter and JetBrains Mono, Latin and Cyrillic
+public/data/groups.json      group index and default group
+public/data/groups/<id>.json weekly timetable for one group
+public/maps/F1..F3.svg       whole floor, all three blocks
+public/maps/C1_B_F.svg       block B on floor F, nine files
+tools/serve.py               local server for public/ with no-store
+tools/build_maps.py          generates all twelve SVG maps from the aitumap sources
+wrangler.toml                deployment and custom domain
 ```
 
-`public/` — это ровно то, что уезжает наружу. Всё остальное — `wrangler.toml`,
-`tools/` — на эдж не попадает.
+`public/` is exactly what gets published. Everything else (`wrangler.toml`, `tools/`) stays off the edge.
 
-Вид — тот же язык, что у roadrage: oklch-токены, карточки с внутренним кольцом,
-сегментные переключатели, моно-шрифт для времени и аудиторий. Тема следует за
-системной: инлайн-скрипт в `<head>` ставит `data-theme` до первой отрисовки,
-а слушатель `matchMedia(...).addEventListener("change", …)` переключает страницу
-на лету, пока вкладка открыта.
+The look uses the same design language as roadrage: oklch tokens, cards with an inner ring, segmented switches, and a monospace face for times and room numbers. The theme follows the system setting. An inline script in `<head>` sets `data-theme` before the first paint, and a `matchMedia(...).addEventListener("change", …)` listener switches the page live while it is open.
 
-## Группы
+## Groups
 
-`data/groups.json` — плоский индекс: `default` и список `{id, name, file}`.
-Файл группы самодостаточен, в нём метаданные и недельная сетка.
+`data/groups.json` is a flat index: `default` plus a list of `{id, name, file}`. Each group file is self-contained and holds its metadata and the weekly grid.
 
-При первом заходе, если групп больше одной, показывается экран выбора. Ответ
-кладётся в `localStorage`, дальше не спрашивается. Порядок разрешения группы:
-`?g=<id>` в адресе → `localStorage` → экран выбора → `default`.
+On the first visit, if there is more than one group, a picker is shown. The answer is stored in `localStorage` and not asked again. Group resolution order: `?g=<id>` in the URL → `localStorage` → picker → `default`.
 
-Селектор в шапке появляется сам, когда групп больше одной, и меняет группу без
-перезагрузки. Ссылка вида `schedule.an8kk.dev/?g=mks-2602` шарится как есть и
-экран выбора не показывает.
+When there is more than one group, a group selector appears in the header and switches groups without a reload. A link such as `schedule.an8kk.dev/?g=mks-2602` can be shared as is and skips the picker.
 
-Id транслитерируется из названия: `МКС-2602` → `mks-2602`. Он же имя файла и
-значение `?g=`, поэтому кириллицы там быть не должно.
+Ids are transliterated from the name: `МКС-2602` → `mks-2602`. The id is also the file name and the `?g=` value, so it must not contain Cyrillic.
 
-Аудитории вида `C1.<блок>.<этаж>NN` кликабельны и наводятся на плане. Всё
-остальное — `IEC-302` и прочие корпуса — показывается пунктирным чипом без
-кнопки карты: планов этих корпусов здесь нет. Проверка живёт в
-`mappable()` в `lib/schedule.js`, без неё `blockOf` возвращал `C1_undefined`,
-а `floorOf` падал.
+Rooms of the form `C1.<block>.<floor>NN` are clickable and highlighted on the plan. Everything else, such as `IEC-302` and other buildings, is shown as a dashed chip without a map button, because there are no plans for those buildings here. The check lives in `mappable()` in `lib/schedule.js`. Without it, `blockOf` returned `C1_undefined` and `floorOf` threw.
 
-## Карта
+## Map
 
-Аудитории размечены атрибутом `data-name` (`C1.2.240K`). Из кода вычисляется всё
-остальное: `C1.2` — блок, первая цифра номера — этаж. То же правило, по которому
-работает оригинальная карта.
+Rooms are marked with a `data-name` attribute (`C1.2.240K`). Everything else is derived from it: `C1.2` is the block, and the first digit of the number is the floor. This is the same rule the original map uses.
 
-По умолчанию открывается план **блока**, а не всего этажа: этаж целиком это
-924×396 единиц, на телефоне номера кабинетов в такой ширине не читаются. Метка
-рисуется в центре bbox нужной группы, сам кабинет заливается синим. Зума нет,
-видно сразу и кабинет, и соседей. Полный этаж доступен кнопкой «весь».
+By default the map opens on a **block** plan rather than a whole floor. A whole floor is 924×396 units, and on a phone the room numbers are unreadable at that width. The pin is drawn at the center of the target group's bounding box and the room is filled in blue. There is no zoom needed: both the room and its neighbours are visible. The full floor is available through the "весь" (whole) button.
 
-## Откуда планы
+## Where the plans come from
 
-Планы из [Yuujiso/aitumap](https://github.com/Yuujiso/aitumap), MIT, автор просит
-упоминание — упоминаю. `tools/build_maps.py` берёт клон репозитория и вытаскивает
-JSX компоненты: `others/C1_ALL_*` для этажей, `separate/C1_*_*` для блоков, плюс
-`WALLPAPER_*` и `ICONS_*`. Дальше `className` → `class`, удаление React-обёрток
-и оборачивание в `<svg viewBox>`. Геометрия не тронута, перекрашено только через
-свой CSS.
+The plans come from [Yuujiso/aitumap](https://github.com/Yuujiso/aitumap), MIT. The author asks for attribution, so this is it. `tools/build_maps.py` takes a clone of that repository and extracts the JSX components: `others/C1_ALL_*` for floors, `separate/C1_*_*` for blocks, plus `WALLPAPER_*` and `ICONS_*`. It then converts `className` to `class`, removes the React wrappers, and wraps the result in `<svg viewBox>`. The geometry is unchanged; only the colours are changed, through this site's own CSS.
 
 ```
 git clone --depth 1 https://github.com/Yuujiso/aitumap.git
 python tools/build_maps.py ../aitumap
 ```
 
-Прямой ссылки на аудиторию у оригинала нет: состояние живёт только в React, ни
-одного URL-параметра. Поэтому планы отрисовываются у себя, а не в iframe.
+The original does not offer a direct link to a room: its state lives only in React, with no URL parameters. That is why the plans are rendered here rather than embedded in an iframe.
 
-## Чего не хватает
+## Known gaps
 
-- Два кода дисциплин обрезаны в исходных скриншотах: `CAL52-EN-P2…` и
-  `HK(STATEE)5…`. Лежат в файле группы как есть.
-- Загружена только 1 неделя 1 периода. Если у периода есть вторая неделя, её тут нет.
-- Даты семестра в `term` прикидочные.
+- Two course codes are truncated in the source screenshots: `CAL52-EN-P2…` and `HK(STATEE)5…`. They are stored in the group file as they are.
+- Only week 1 of period 1 is loaded. If the period has a second week, it is not here.
+- The semester dates in `term` are estimates.
